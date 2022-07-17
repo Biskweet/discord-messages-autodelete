@@ -42,7 +42,7 @@ try:
     offset, messages = load_msgs()
 except Exception:
     offset, messages = 0, dict()
-    save_msgs(offs)
+    save_msgs(offset, messages)
 
 for msg in data["messages"]:
     if messages.get(msg[0]["channel_id"]) is None:
@@ -53,7 +53,7 @@ for msg in data["messages"]:
 while offset < totalmsgcount:
     response = r.get(url + f"&offset={offset}", headers=headers)
 
-    while response.status_code == 429:
+    while response.status_code != 200:
         delay = response.json()["retry_after"]
         print("Temporizing for", delay, "seconds")
         if not saved:
